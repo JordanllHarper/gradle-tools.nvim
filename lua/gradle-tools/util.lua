@@ -22,23 +22,17 @@ function M.run_job(args, command, on_stdout, on_stderr, on_exit)
         args = args,
         on_stdout = function(error, data)
             schedule(function()
-                if on_stdout then
-                    on_stdout(error, data)
-                end
+                if on_stdout then on_stdout(error, data) end
             end)
         end,
         on_stderr = function(error, data)
             schedule(function()
-                if on_stderr then
-                    on_stderr(error, data)
-                end
+                if on_stderr then on_stderr(error, data) end
             end)
         end,
         on_exit = function(_, code, signal)
             schedule(function()
-                if on_exit then
-                    on_exit(code, signal)
-                end
+                if on_exit then on_exit(code, signal) end
             end)
         end
     }):start()
