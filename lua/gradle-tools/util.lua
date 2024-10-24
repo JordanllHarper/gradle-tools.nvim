@@ -15,25 +15,31 @@ end
 ---@param command string
 ---@param on_stdout? fun(error: string, data: string)
 ---@param on_stderr? fun(error: string, data: string)
----@param on_exit? fun(code: number, signal: number)
+---@param on_exit? fun(j: Job, code: number, signal: number)
 function M.run_job(args, command, on_stdout, on_stderr, on_exit)
     Job:new({
         command = command,
         args = args,
         on_stdout = function(error, data)
-            schedule(function()
-                if on_stdout then on_stdout(error, data) end
-            end)
+            if on_stdout then
+                schedule(function()
+                    on_stdout(error, data)
+                end)
+            end
         end,
         on_stderr = function(error, data)
-            schedule(function()
-                if on_stderr then on_stderr(error, data) end
-            end)
+            if on_stderr then
+                schedule(function()
+                    on_stderr(error, data)
+                end)
+            end
         end,
-        on_exit = function(_, code, signal)
-            schedule(function()
-                if on_exit then on_exit(code, signal) end
-            end)
+        on_exit = function(j, code, signal)
+            if on_exit then
+                schedule(function()
+                    on_exit(j, code, signal)
+                end)
+            end
         end
     }):start()
 end
